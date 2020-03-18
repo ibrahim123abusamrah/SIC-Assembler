@@ -1,4 +1,4 @@
-Opcode = {
+OPTAB = {
     "ADD": "18",
     "ADDF": "58",
     "ADDR": "90",

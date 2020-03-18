@@ -33,6 +33,7 @@ RLOOP    TD     INPUT
   -      TIX    MAXLEN
   -      JLT    RLOOP
 EXIT     STX    LENGTH
+         RSUB
 INPUT    BYTE   X'F1'
 MAXLEN   WORD   4096
 .
@@ -41,8 +42,10 @@ MAXLEN   WORD   4096
 WRREC    LDX    ZERO
 WLOOP    TD     OUTPUT
   -      JEQ    WLOOP
+  -      LDCH   BUFFER,X
   -      WD     OUTPUT
   -      TIX    LENGTH
   -      JLT    WLOOP
+  -      RSUB
 OUTPUT   BYTE   X'06'
   -      END    FIRST
