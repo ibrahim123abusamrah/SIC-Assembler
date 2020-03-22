@@ -1,12 +1,13 @@
-COPY     START  1000              .comment
+COPY     START  1000                    .comment
 FIRST    STL    RETADR
 CLOOP    JSUB   RDREC
-  -      LDA    LENGTH
+  -      LDA    =C'EOF'
   -      COMP   ZERO
   -      JEQ    ENDFIL
   -      JSUB   WRREC
-  -      J      CLOOP
+  -      J      =C'FOD'
 ENDFIL   LDA    EOF
+  -      LTORG
   -      STA    BUFFER
   -      LDA    THREE
   -      STA    LENGTH
@@ -23,12 +24,13 @@ BUFFER   RESB   4096
 .      SUBROUTINE TO READ RECORD INTO BUFFER
 .
 RDREC    LDX    ZERO
-  -      LDA    ZERO
+  -      LDA    =X'05'
 RLOOP    TD     INPUT
-  -      JEQ    RLOOP
+  -      JEQ    =C'FDD'
   -      RD     INPUT
   -      COMP   ZERO
   -      JEQ    EXIT
+  -      LTORG
   -      STCH   BUFFER,X
   -      TIX    MAXLEN
   -      JLT    RLOOP
@@ -41,7 +43,7 @@ MAXLEN   WORD   4096
 .
 WRREC    LDX    ZERO
 WLOOP    TD     OUTPUT
-  -      JEQ    WLOOP
+  -      JEQ    =C'GGGF'
   -      LDCH   BUFFER,X
   -      WD     OUTPUT
   -      TIX    LENGTH

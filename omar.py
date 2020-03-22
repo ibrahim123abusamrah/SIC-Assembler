@@ -1,102 +1,97 @@
 from InstractionSet import OPTAB
 
-f = open("SIC_input.asm", "r")
-firstLine=f.readline()
-firstLineOpcode=firstLine[9:16].strip()
-operand=firstLine[16:34].strip()
-LOCCTR=0
-if firstLineOpcode=="START":
-    STARTADDRESS=operand
-    LOCCTR=int(operand,16)
-#     nextLine=f.readline()
-# operand=nextLine[16:34].strip()
-SYMTAB={}
-errors=[]
-if f.mode == "r":
-    for LineNumber, line in enumerate(f.readlines(), 1):
-        label = line[0:8].strip()  # remove newline and spaces
+inputFile = open("SIC_input.asm", "r")
+fileInterm = open("Intermediatefile.txt", "w")
+
+firstLine = inputFile.readline()
+
+firstLineOpcode = firstLine[9:16].strip()
+operand = firstLine[16:34].strip()
+nameOfProgram = firstLine[0:8].strip()
+LOCCTR = 0
+if firstLineOpcode == "START":
+    STARTADDRESS = operand
+    LOCCTR = int(operand, 16)  # make locctr integer
+    # write first line to intermediate file
+    fileInterm.write(
+        f"{format(LOCCTR,'x')}  {firstLine[0:8]} {firstLine[9:16]}{firstLine[16:34]}\n")
+
+
+SYMTAB = {}
+LITTAB = {} #key value length address
+errors = []
+if inputFile.mode == "r":
+    for LineNumber, line in enumerate(inputFile.readlines(), 1):
+        label = line[0:8].strip()      # remove newlines and spaces
         opcode = line[9:16].strip()
         operand = line[16:34].strip()
-        comment = line[35:65].strip()
+        # comment = line[35:65].strip()
 
-        if line[0] != " " and line[0] != "." :
-            if label in SYMTAB:
-                errors.append(f"duplicate symbol {label} Line: {LineNumber+1}") 
-            else:  
-              SYMTAB[label]=hex(LOCCTR)
-       
-        if line[0] != "." : 
+        #  Start build symbol table SYMTAB
+        if line[0] != " " and line[0] != ".": 
+            if label in SYMTAB:          
+                errors.append(f"Duplicate label: {label} Line: {LineNumber+1}")
+            else:
+                SYMTAB[label] = format(LOCCTR, 'x')
+        # End build symbol table SYMTAB
+
+        if line[0] != ".":
+            #  Start build literal table LITTAB
+            if operand != '':     # if no operand the operand[0] will be out of range       
+                if operand[0] == "=":
+                    if operand not in LITTAB:
+                        if operand[1] == 'C':
+                            LenLiteral = len(operand)-4
+                            LITTAB[operand] = [ operand[3:-1].encode("utf-8").hex(), LenLiteral] #add value and length
+
+                        elif operand[1] == 'X':
+                            LenLiteral = (len(operand)-4)//2
+                            LITTAB[operand] = [ operand[3:-1], LenLiteral]
+
+                        
+        # End build literal table LITTAB
+
+        # Start write to intermediate file
+            fileInterm.write(
+                f"{format(LOCCTR,'x')}  {line[0:8]} {line[9:16]}{line[16:34]}\n")
+        # End write to intermediate file
+
             if opcode in OPTAB:
-                LOCCTR+=3
-            elif opcode=="WORD":
-                LOCCTR+=3
-            elif opcode=="RESW":
-                LOCCTR+=3*int(operand)
-            elif opcode=="RESB":
-                LOCCTR+=int(operand)
-            elif opcode=="BYTE":
-                if operand[0]=='C':
-                    LOCCTR+=len(operand)-3
-                elif  operand[0]=='X': 
-                    LOCCTR+=(len(operand)-3)//2
+                LOCCTR += 3
+            elif opcode == "WORD":
+                LOCCTR += 3
+            elif opcode == "RESW":
+                LOCCTR += 3*int(operand)
+            elif opcode == "RESB":
+                LOCCTR += int(operand)
+            elif opcode == "BYTE":
+                if operand[0] == 'C':
+                    LOCCTR += len(operand)-3
+                elif operand[0] == 'X':
+                    LOCCTR += (len(operand)-3)//2
 
+            elif opcode == "LTORG" or opcode == "END":
+                for x in LITTAB:
+                    if len(LITTAB[x]) == 2:  # check if the literal no addressed before
+                        LITTAB[x].append(format(LOCCTR, 'x')) #assigned address to literals
+                        LOCCTR += LITTAB[x][1]  # LOCCTR +length of litral
+                if opcode == "END":
+                    break
 
-              
-        # if line[0] != "." : 
+            else:
+                errors.append(
+                    f"Invalid operation code:'{opcode}' Line:{LineNumber+1}")
 
-print(SYMTAB)
-print(errors)
-# # for LineNumber, line in enumerate(f.readlines(), 1):
-# #     label = line[0:8].strip()  # remove newline and spaces
-# #     opcode = line[9:16].strip()
-# #     operand = line[16:34].strip()
-# #     comment = line[35:65].strip()
+fileInterm.close()
 
-# #     # print(label)
-# #     print(opcode)
-# #     # print(operand)
-# #     # print(comment)
-# # # print(LOCCTR)
-# def main():
-#     f = open("SIC_input.asm", "r")
-#     numberOfdirective = 0
-#     directives = ['START', 'END', 'BYTE', 'WORD', 'RESB', 'RESW']
-#     linesContainIndex = []
-#     labels = []
-#     opcodes = []
-#     operands = []
-#     comments = []
-#     if f.mode == "r":
-#         for LineNumber, line in enumerate(f.readlines(), 1):
-#             label = line[0:8].strip()  # remove newline and spaces
-#             opcode = line[9:16].strip()
-#             operand = line[16:34].strip()
-#             comment = line[35:65].strip()
+programlength = format(LOCCTR-int(STARTADDRESS, 16), 'x')
 
-#             if line[0] != " " and line[0] != "." :
-#                 labels.append(label)
-#             if line[0] != "." :    
-#              opcodes.append(opcode)
-#             if opcode in directives:  # check if the opcode is directive or not
-#                 numberOfdirective += 1
-
-#             if operand != "":
-#                 if ',x' in operand:  # search for indexing addressing
-#                     linesContainIndex.append(LineNumber)
-#                 operands.append(operand)
-
-#             if comment != "" and comment[0]=='.':
-#                 comments.append(comment)
-
-#         numberOfInstruction = len(opcodes)-numberOfdirective
-
-#     print(f'The name of program is: {opcodes}')
-#     # print(f'The number of comments is:{len(comments)}')
-#     # print(f'Number of directives is: {numberOfdirective}')
-#     # print(f'Number of instructions is: {numberOfInstruction}')
-#     # print(f'lines contain indexed addressing: {linesContainIndex}')
-    
-
-
-# if __name__ == "__main__":
-#     main()
+print("Omar Taradeh and Ibrahim AbuSamrah")
+if len(errors) != 0:
+    print("errors: ", errors)
+else:
+    print(f"SYMTAB: \n{SYMTAB} \n")
+    print(f"LITTAB: \n{LITTAB} \n ")
+    print("LOCCTR:", format(LOCCTR, 'x'))
+    print("program length:", programlength)
+    print("PRGNAME:", nameOfProgram)
