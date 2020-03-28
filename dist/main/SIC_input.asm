@@ -10,7 +10,7 @@ ENDFIL   LDA    EOF
   -      LTORG
   -      STA    BUFFER
   -      LDA    THREE
-  -      STA    LENGTH
+  -      STfA   LENGTH
   -      JSUB   WRREC
   -      LDL    RETADR
   -      RSUB
