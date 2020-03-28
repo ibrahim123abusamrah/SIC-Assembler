@@ -1,7 +1,11 @@
 from InstractionSet import OPTAB
 
-inputFile = open("SIC_input.asm", "r")
-intermFile = open("Intermediatefile.txt", "w")
+import sys
+SIC_File_input = str(sys.argv[1])
+Intermediate_File_output = str(sys.argv[2])
+
+inputFile = open(SIC_File_input, "r")
+intermFile = open(Intermediate_File_output, "w")
 
 firstLine = inputFile.readline()
 
