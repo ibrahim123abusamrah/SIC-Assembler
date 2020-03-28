@@ -46,9 +46,11 @@ if inputFile.mode == "r":
                             LITTAB[operand] = [ operand[3:-1].encode("utf-8").hex(), LenLiteral] #add value and length
 
                         elif operand[1] == 'X':
-                            LenLiteral = (len(operand)-4)//2
-                            LITTAB[operand] = [ operand[3:-1], LenLiteral]
-
+                            if (len(operand)-4)%2==0:
+                                LenLiteral = (len(operand)-4)//2
+                                LITTAB[operand] = [ operand[3:-1], LenLiteral]
+                            else:
+                                Errors.append(f"Literal length must be Even: {operand} Line: {LineNumber+1}")
                         
         # End build literal table LITTAB
 
@@ -85,12 +87,12 @@ intermFile.close()
 
 programlength = format(LOCCTR-int(STARTADDRESS, 16), 'x')
 
-print("Omar Taradeh and Ibrahim AbuSamrah")
+print("\n\t\t\t\t \t\t\tOmar Taradeh and Ibrahim AbuSamrah")
 if len(Errors) != 0:
-    print("errors: ", Errors)
+    print("Errors: ", Errors)
 else:
     print(f"SYMTAB: \n{SYMTAB} \n")
     print(f"LITTAB: \n{LITTAB} \n ")
     print("LOCCTR:", format(LOCCTR, 'x'))
-    print("program length:", programlength)
+    print("Program length:", programlength)
     print("PRGNAME:", nameOfProgram)

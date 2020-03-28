@@ -11,83 +11,83 @@
 
 100f    -      JSUB   WRREC
 
-1012    -      J      =C'FOD'
+1012    -      J      CLOOP
 
 1015  ENDFIL   LDA    EOF
 
 1018    -      LTORG
 
-101e    -      STA    BUFFER
+101b    -      STA    BUFFER
 
-1021    -      LDA    THREE
+101e    -      LDA    THREE
 
-1024    -      STA    LENGTH
+1021    -      STA    LENGTH
 
-1027    -      JSUB   WRREC
+1024    -      JSUB   WRREC
 
-102a    -      LDL    RETADR
+1027    -      LDL    RETADR
 
-102d    -      RSUB
+102a    -      RSUB
 
-1030  EOF      BYTE   C'EOF'
+102d  EOF      BYTE   C'EOF'
 
-1033  THREE    WORD   3
+1030  THREE    WORD   3
 
-1036  ZERO     WORD   0
+1033  ZERO     WORD   0
 
-1039  RETADR   RESW   1
+1036  RETADR   RESW   1
 
-103c  LENGTH   RESW   1
+1039  LENGTH   RESW   1
 
-103f  BUFFER   RESB   4096
+103c  BUFFER   RESB   4096
 
-203f  RDREC    LDX    ZERO
+203c  RDREC    LDX    ZERO
 
-2042    -      LDA    =X'05'
+203f    -      LDA    =X'0052'
 
-2045  RLOOP    TD     INPUT
+2042  RLOOP    TD     INPUT
 
-2048    -      JEQ    =C'FDD'
+2045    -      JEQ    RLOOP
 
-204b    -      RD     INPUT
+2048    -      RD     INPUT
 
-204e    -      COMP   ZERO
+204b    -      COMP   ZERO
 
-2051    -      JEQ    EXIT
+204e    -      JEQ    EXIT
 
-2054    -      LTORG
+2051    -      LTORG
 
-2058    -      STCH   BUFFER,X
+2053    -      STCH   BUFFER,X
 
-205b    -      TIX    MAXLEN
+2056    -      TIX    MAXLEN
 
-205e    -      JLT    RLOOP
+2059    -      JLT    RLOOP
 
-2061  EXIT     STX    LENGTH
+205c  EXIT     STX    LENGTH
 
-2064           RSUB
+205f           RSUB
 
-2067  INPUT    BYTE   X'F1'
+2062  INPUT    BYTE   X'F1'
 
-2068  MAXLEN   WORD   4096
+2063  MAXLEN   WORD   4096
 
-206b  WRREC    LDX    ZERO
+2066  WRREC    LDX    ZERO
 
-206e  WLOOP    TD     OUTPUT
+2069  WLOOP    TD     OUTPUT
 
-2071    -      JEQ    =C'GGGF'
+206c    -      JEQ    WLOOP
 
-2074    -      LDCH   BUFFER,X
+206f    -      LDCH   BUFFER,X
 
-2077    -      WD     OUTPUT
+2072    -      WD     OUTPUT
 
-207a    -      TIX    LENGTH
+2075    -      TIX    LENGTH
 
-207d    -      JLT    WLOOP
+2078    -      JLT    WLOOP
 
-2080    -      RSUB
+207b    -      RSUB
 
-2083  OUTPUT   BYTE   X'06'
+207e  OUTPUT   BYTE   X'06'
 
-2084    -      END    FIRST
+207f    -      END    FIRST
 

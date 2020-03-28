@@ -5,7 +5,7 @@ CLOOP    JSUB   RDREC
   -      COMP   ZERO
   -      JEQ    ENDFIL
   -      JSUB   WRREC
-  -      J      =C'FOD'
+  -      J      CLOOP
 ENDFIL   LDA    EOF
   -      LTORG
   -      STA    BUFFER
@@ -24,9 +24,9 @@ BUFFER   RESB   4096
 .      SUBROUTINE TO READ RECORD INTO BUFFER
 .
 RDREC    LDX    ZERO
-  -      LDA    =X'05'
+  -      LDA    =X'0052'
 RLOOP    TD     INPUT
-  -      JEQ    =C'FDD'
+  -      JEQ    RLOOP
   -      RD     INPUT
   -      COMP   ZERO
   -      JEQ    EXIT
@@ -43,7 +43,7 @@ MAXLEN   WORD   4096
 .
 WRREC    LDX    ZERO
 WLOOP    TD     OUTPUT
-  -      JEQ    =C'GGGF'
+  -      JEQ    WLOOP
   -      LDCH   BUFFER,X
   -      WD     OUTPUT
   -      TIX    LENGTH
