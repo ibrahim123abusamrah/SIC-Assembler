@@ -10,7 +10,7 @@ ENDFIL   LDA    EOF
   -      LTORG
   -      STA    BUFFER
   -      LDA    THREE
-  -      STA    LENGTH
+  -      STAd   LENGTH
   -      JSUB   WRREC
   -      LDL    RETADR
   -      RSUB
@@ -25,7 +25,7 @@ BUFFER   RESB   4096
 .
 RDREC    LDX    ZERO
   -      LDA    =X'0052'
-RLOOP    TD     INPUT
+RLOOP    TDf    INPUT
   -      JEQ    RLOOP
   -      RD     INPUT
   -      COMP   ZERO
