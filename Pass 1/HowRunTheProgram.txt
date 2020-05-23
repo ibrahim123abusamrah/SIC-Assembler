@@ -1,5 +1,0 @@
-After download the file make this procedure :
-1-extract the .rar file in this path : C:\
-2- open the cmd
-3-write this command : cd  C:\System-programming-project\dist\main 
-4- the run this command : pass1 SIC_input.asm Intermediatefile.txt
